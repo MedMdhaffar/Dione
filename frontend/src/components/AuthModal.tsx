@@ -37,6 +37,10 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
+  // MISSING STATES ADDED
+  const [step, setStep] = useState<'form' | 'verify'>('form');
+  const [verificationCode, setVerificationCode] = useState('');
+
   if (!isOpen) return null;
 
   const validateForm = (): boolean => {
@@ -87,7 +91,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
+
     // Clear specific error when user starts typing
     if (errors[name as keyof ValidationErrors]) {
       setErrors(prev => ({ ...prev, [name]: undefined }));
@@ -96,26 +100,29 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
+
+    if (!validateForm()) return;
 
     setIsLoading(true);
     setErrors({});
 
     try {
-      const endpoint = isSignUp ? '/api/auth/register' : '/api/auth/login';
-      const payload = isSignUp 
-        ? { name: formData.name?.trim(), email: formData.email.toLowerCase().trim(), password: formData.password }
-        : { email: formData.email.toLowerCase().trim(), password: formData.password };
+      const endpoint = isSignUp ? '/accounts/signup/' : '/accounts/signin/';
+      const payload = isSignUp
+        ? {
+            username: formData.name?.trim(),
+            email: formData.email.toLowerCase().trim(),
+            password: formData.password
+          }
+        : {
+            email: formData.email.toLowerCase().trim(),
+            password: formData.password
+          };
 
-      const response = await fetch(`http://localhost:5000${endpoint}`, {
+      const response = await fetch(`http://localhost:8000${endpoint}`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
       });
 
       const data = await response.json();
@@ -130,35 +137,60 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
           });
           setErrors(backendErrors);
         } else {
-          setErrors({ general: data.error || `${isSignUp ? 'Registration' : 'Login'} failed` });
+          setErrors({ general: data.detail || data.error || 'Request failed' });
         }
         return;
       }
 
-      // Success
+      // If signup, go to verify step instead of success immediately
+      if (isSignUp) {
+        setStep('verify');
+        setIsLoading(false);
+        return;
+      }
+
       setIsSuccess(true);
-      
-      // Store token if needed
+
       if (data.token) {
         localStorage.setItem('authToken', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
       }
 
-      // Reset form
-      setFormData({
-        email: '',
-        password: '',
-        name: '',
-        confirmPassword: ''
+      setFormData({ email: '', password: '', name: '', confirmPassword: '' });
+      console.log(`${isSignUp ? 'Registration' : 'Login'} successful:`, data);
+
+    } catch (error) {
+      console.error('Error:', error);
+      setErrors({ general: 'Network error. Please check your connection and try again.' });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleVerify = async () => {
+    setIsLoading(true);
+    setErrors({});
+    try {
+      const response = await fetch('http://localhost:8000/accounts/verify/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: formData.name,
+          code: verificationCode,
+        }),
       });
 
-      console.log(`${isSignUp ? 'Registration' : 'Login'} successful:`, data);
-      
-    } catch (error) {
-      console.error(`${isSignUp ? 'Registration' : 'Login'} error:`, error);
-      setErrors({ 
-        general: 'Network error. Please check your connection and try again.' 
-      });
+      const data = await response.json();
+      if (!response.ok) {
+        setErrors({ general: data.error || 'Verification failed' });
+      } else {
+        setIsSuccess(true);
+        setStep('form'); // reset step after success
+        setVerificationCode('');
+        setFormData({ email: '', password: '', name: '', confirmPassword: '' });
+      }
+    } catch (err) {
+      setErrors({ general: 'Network error during verification' });
     } finally {
       setIsLoading(false);
     }
@@ -174,6 +206,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     });
     setErrors({});
     setIsSuccess(false);
+    setStep('form');
+    setVerificationCode('');
   };
 
   const handleClose = () => {
@@ -186,15 +220,56 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     setErrors({});
     setIsSuccess(false);
     setIsSignUp(false);
+    setStep('form');
+    setVerificationCode('');
     onClose();
   };
+
+  if (step === 'verify') {
+    return (
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-6 z-50">
+        <div className={`backdrop-blur-sm border rounded-2xl p-8 w-full max-w-md text-center ${
+          isDark ? 'bg-black/40 border-cyan-500/20' : 'bg-white/40 border-purple-500/20'
+        }`}>
+          <h2 className={`text-2xl font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-800'}`}>
+            Verify your Email
+          </h2>
+          <p className={`mb-6 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+            A verification code was sent to your email. Please enter it below.
+          </p>
+          <input
+            type="text"
+            value={verificationCode}
+            onChange={(e) => setVerificationCode(e.target.value)}
+            placeholder="Enter verification code"
+            className={`w-full px-4 py-3 rounded-lg border mb-4 focus:outline-none focus:ring-2 ${
+              isDark
+                ? 'bg-black/20 border-cyan-500/50 text-white placeholder-gray-400 focus:ring-cyan-400'
+                : 'bg-white/50 border-purple-500/50 text-gray-800 placeholder-gray-600 focus:ring-purple-400'
+            }`}
+          />
+
+          <button
+            onClick={handleVerify}
+            disabled={isLoading}
+            className="w-full py-3 bg-purple-600 text-white rounded-full font-semibold hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoading ? 'Verifying...' : 'Verify Account'}
+          </button>
+          {errors.general && (
+            <p className="mt-4 text-red-500 text-sm">{errors.general}</p>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   if (isSuccess) {
     return (
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-6 z-50">
         <div className={`backdrop-blur-sm border rounded-2xl p-8 w-full max-w-md text-center transition-all duration-300 ${
-          isDark 
-            ? 'bg-black/40 border-green-500/20' 
+          isDark
+            ? 'bg-black/40 border-green-500/20'
             : 'bg-white/40 border-green-500/20'
         }`}>
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
@@ -206,7 +281,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
           <p className={`mb-6 transition-colors duration-300 ${
             isDark ? 'text-gray-300' : 'text-gray-600'
           }`}>
-            {isSignUp 
+            {isSignUp
               ? 'Your account has been created successfully. You can now start using our AI-powered social media automation platform.'
               : 'You have successfully logged in. Ready to automate your social media?'
             }
@@ -214,8 +289,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
           <button
             onClick={handleClose}
             className={`w-full py-3 rounded-full text-white font-semibold transition-all duration-300 transform hover:scale-105 ${
-              isDark 
-                ? 'bg-gradient-to-r from-cyan-500 to-purple-500 hover:shadow-cyan-500/25' 
+              isDark
+                ? 'bg-gradient-to-r from-cyan-500 to-purple-500 hover:shadow-cyan-500/25'
                 : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:shadow-purple-500/25'
             }`}
           >
@@ -229,16 +304,16 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-6 z-50">
       <div className={`backdrop-blur-sm border rounded-2xl p-8 w-full max-w-md transition-all duration-300 relative ${
-        isDark 
-          ? 'bg-black/40 border-cyan-500/20' 
+        isDark
+          ? 'bg-black/40 border-cyan-500/20'
           : 'bg-white/40 border-purple-500/20'
       }`}>
         {/* Close Button */}
         <button
           onClick={handleClose}
           className={`absolute top-4 right-4 p-2 rounded-full transition-colors duration-300 ${
-            isDark 
-              ? 'text-gray-400 hover:text-white hover:bg-white/10' 
+            isDark
+              ? 'text-gray-400 hover:text-white hover:bg-white/10'
               : 'text-gray-600 hover:text-gray-800 hover:bg-black/10'
           }`}
         >
@@ -247,17 +322,17 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
         <div className="text-center mb-8">
           <div className="flex items-center justify-center space-x-4 mb-4">
-            <img 
-              src="/Dione.png" 
-              alt="DIONE Team" 
+            <img
+              src="/Dione.png"
+              alt="DIONE Team"
               className={`w-12 h-12 rounded-full ring-2 transition-all duration-300 ${
                 isDark ? 'ring-cyan-400/50' : 'ring-purple-500/50'
               }`}
             />
             <div>
               <h1 className={`text-2xl font-bold bg-gradient-to-r bg-clip-text text-transparent transition-all duration-300 ${
-                isDark 
-                  ? 'from-cyan-400 to-purple-400' 
+                isDark
+                  ? 'from-cyan-400 to-purple-400'
                   : 'from-purple-600 to-pink-600'
               }`}>
                 Trendwave
@@ -275,8 +350,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
           <p className={`transition-colors duration-300 ${
             isDark ? 'text-gray-300' : 'text-gray-600'
           }`}>
-            {isSignUp 
-              ? 'Start automating your social media with AI' 
+            {isSignUp
+              ? 'Start automating your social media with AI'
               : 'Sign in to your account'
             }
           </p>
@@ -284,8 +359,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
         {errors.general && (
           <div className={`mb-6 p-4 rounded-lg border flex items-center space-x-3 ${
-            isDark 
-              ? 'bg-red-500/10 border-red-500/20 text-red-400' 
+            isDark
+              ? 'bg-red-500/10 border-red-500/20 text-red-400'
               : 'bg-red-50 border-red-200 text-red-600'
           }`}>
             <AlertCircle className="w-5 h-5 flex-shrink-0" />
@@ -395,14 +470,12 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                       ? 'border-gray-600 bg-black/20 text-white focus:ring-cyan-500/20 focus:border-cyan-500/50'
                       : 'border-gray-300 bg-white/50 text-gray-800 focus:ring-purple-200 focus:border-purple-400'
                 }`}
-                placeholder={isSignUp ? "Create a strong password" : "Enter your password"}
+                placeholder="Enter your password"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className={`absolute right-3 top-1/2 transform -translate-y-1/2 transition-colors duration-300 ${
-                  isDark ? 'text-gray-400 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700'
-                }`}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
               >
                 {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
@@ -416,7 +489,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             )}
           </div>
 
-          {/* Confirm Password Field - Only for Sign Up */}
+          {/* Confirm Password - Only for Sign Up */}
           {isSignUp && (
             <div>
               <label className={`block text-sm font-medium mb-2 transition-colors duration-300 ${
@@ -447,9 +520,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className={`absolute right-3 top-1/2 transform -translate-y-1/2 transition-colors duration-300 ${
-                    isDark ? 'text-gray-400 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700'
-                  }`}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
                 >
                   {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -464,44 +535,36 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             </div>
           )}
 
-          {/* Submit Button */}
           <button
             type="submit"
             disabled={isLoading}
-            className={`w-full py-3 rounded-full text-white font-semibold transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center ${
-              isDark 
-                ? 'bg-gradient-to-r from-cyan-500 to-purple-500 hover:shadow-cyan-500/25' 
+            className={`w-full py-3 rounded-full text-white font-semibold transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed ${
+              isDark
+                ? 'bg-gradient-to-r from-cyan-500 to-purple-500 hover:shadow-cyan-500/25'
                 : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:shadow-purple-500/25'
             }`}
           >
             {isLoading ? (
-              <>
-                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                {isSignUp ? 'Creating Account...' : 'Signing In...'}
-              </>
+              <Loader2 className="w-5 h-5 mx-auto animate-spin" />
             ) : (
               isSignUp ? 'Create Account' : 'Sign In'
             )}
           </button>
         </form>
 
-        <div className="mt-6 text-center">
-          <p className={`text-sm transition-colors duration-300 ${
-            isDark ? 'text-gray-400' : 'text-gray-600'
-          }`}>
-            {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
-            <button 
-              onClick={toggleMode}
-              className={`font-semibold transition-colors duration-300 ${
-                isDark 
-                  ? 'text-cyan-400 hover:text-cyan-300' 
-                  : 'text-purple-600 hover:text-purple-700'
-              }`}
-            >
-              {isSignUp ? 'Sign In' : 'Sign Up'}
-            </button>
-          </p>
-        </div>
+        <p className={`mt-6 text-center text-sm transition-colors duration-300 ${
+          isDark ? 'text-gray-400' : 'text-gray-600'
+        }`}>
+          {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
+          <button
+            onClick={toggleMode}
+            className={`font-semibold hover:underline focus:outline-none ${
+              isDark ? 'text-cyan-400 hover:text-cyan-600' : 'text-purple-600 hover:text-purple-800'
+            }`}
+          >
+            {isSignUp ? 'Sign In' : 'Sign Up'}
+          </button>
+        </p>
       </div>
     </div>
   );

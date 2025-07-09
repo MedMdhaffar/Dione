@@ -1,5 +1,6 @@
 # =========== Backend =========== #
-.sqlite3
+.env
+*.sqlite3
 __pycache__
 .vscode/*
 !.vscode/extensions.json
