@@ -1,13 +1,13 @@
-import { Link } from 'react-router-dom';
-import { FormEvent } from 'react';
+import { Link } from "react-router-dom";
+import { FormEvent } from "react";
 
 const SignInForm: React.FC = () => {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     console.log({
-      email: formData.get('email'),
-      password: formData.get('password'),
+      email: formData.get("email"),
+      password: formData.get("password"),
     });
   };
 
@@ -16,11 +16,15 @@ const SignInForm: React.FC = () => {
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
         <h2 className="text-2xl font-bold mb-6 text-center">Sign In</h2>
         <div className="mb-4">
-          <Link to="/signup" className="text-blue-500 hover:underline">Need an account? Sign Up</Link>
+          <Link to="/signup" className="text-blue-500 hover:underline">
+            Need an account? Sign Up
+          </Link>
         </div>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-gray-700 mb-2" htmlFor="email">Email</label>
+            <label className="block text-gray-700 mb-2" htmlFor="email">
+              Email
+            </label>
             <input
               type="email"
               id="email"
@@ -30,7 +34,9 @@ const SignInForm: React.FC = () => {
             />
           </div>
           <div className="mb-6">
-            <label className="block text-gray-700 mb-2" htmlFor="password">Password</label>
+            <label className="block text-gray-700 mb-2" htmlFor="password">
+              Password
+            </label>
             <input
               type="password"
               id="password"

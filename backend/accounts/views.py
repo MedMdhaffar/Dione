@@ -6,6 +6,8 @@ from django.core.mail import send_mail
 from django.core.cache import cache
 from .serializers import SignupSerializer
 import random
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from django.contrib.auth import authenticate
 
 
 
@@ -57,3 +59,44 @@ def verify_email(request):
 
     except User.DoesNotExist:
         return Response({"error": "User not found."}, status=404)
+
+@api_view(['POST'])
+def signin(request):
+    email = request.data.get('email')
+    password = request.data.get('password')
+
+    if not email or not password:
+        return Response({"error": "Email and password are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+
+    try:
+        user_obj = User.objects.get(email=email)
+        user = authenticate(username=user_obj.username, password=password)
+    except User.DoesNotExist:
+        return Response({"error": "Invalid email or password."}, status=status.HTTP_401_UNAUTHORIZED)
+
+    if user is None:
+        return Response({"error": "Invalid email or password."}, status=status.HTTP_401_UNAUTHORIZED)
+
+    if not user.is_active:
+        return Response({"error": "Please verify your email before signing in."}, status=status.HTTP_403_FORBIDDEN)
+
+    serializer = TokenObtainPairSerializer(data={
+        "username": user.username,
+        "password": password
+    })
+
+    if serializer.is_valid():
+        return Response({
+            "message": "Login successful",
+            "tokens": serializer.validated_data,
+            "user": {
+                "username": user.username,
+                "email": user.email,
+                "id": user.id,
+            }
+        }, status=status.HTTP_200_OK)
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
