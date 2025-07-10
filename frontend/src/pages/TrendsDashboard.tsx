@@ -14,113 +14,97 @@ const TrendsDashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   // Mock data - in real app, this would come from APIs
-  const [cryptoData, setCryptoData] = useState<CryptoCurrency[]>([
-    {
-      id: 'bitcoin',
-      name: 'Bitcoin',
-      symbol: 'btc',
-      image: 'https://assets.coingecko.com/coins/images/1/large/bitcoin.png',
-      current_price: 43250.50,
-      market_cap: 847000000000,
-      market_cap_rank: 1,
-      price_change_percentage_1h: 0.5,
-      price_change_percentage_6h: 2.1,
-      price_change_percentage_18h: -1.2,
-      price_change_percentage_24h: 3.4,
-      total_volume: 28000000000,
-      circulating_supply: 19600000,
-      max_supply: 21000000,
-      sparkline_in_7d: {
-        price: [42000, 42500, 43000, 42800, 43200, 43500, 43250]
-      }
-    },
-    {
-      id: 'ethereum',
-      name: 'Ethereum',
-      symbol: 'eth',
-      image: 'https://assets.coingecko.com/coins/images/279/large/ethereum.png',
-      current_price: 2650.75,
-      market_cap: 318000000000,
-      market_cap_rank: 2,
-      price_change_percentage_1h: -0.3,
-      price_change_percentage_6h: 1.8,
-      price_change_percentage_18h: 0.9,
-      price_change_percentage_24h: 2.1,
-      total_volume: 15000000000,
-      circulating_supply: 120000000,
-      max_supply: null,
-      sparkline_in_7d: {
-        price: [2600, 2620, 2640, 2630, 2650, 2670, 2651]
-      }
-    },
-    {
-      id: 'solana',
-      name: 'Solana',
-      symbol: 'sol',
-      image: 'https://assets.coingecko.com/coins/images/4128/large/solana.png',
-      current_price: 98.45,
-      market_cap: 43000000000,
-      market_cap_rank: 5,
-      price_change_percentage_1h: 1.2,
-      price_change_percentage_6h: 4.5,
-      price_change_percentage_18h: 2.8,
-      price_change_percentage_24h: 7.3,
-      total_volume: 2800000000,
-      circulating_supply: 437000000,
-      max_supply: null,
-      sparkline_in_7d: {
-        price: [92, 94, 96, 95, 97, 99, 98.45]
-      }
-    }
-  ]);
+  const generateMockCryptoData = (): CryptoCurrency[] => {
+    const cryptoNames = [
+      'Bitcoin', 'Ethereum', 'Tether', 'BNB', 'Solana', 'XRP', 'USDC', 'Cardano', 'Dogecoin', 'Avalanche',
+      'TRON', 'Chainlink', 'Polygon', 'Wrapped Bitcoin', 'Polkadot', 'Internet Computer', 'Litecoin', 'Shiba Inu', 'Uniswap', 'Ethereum Classic',
+      'Bitcoin Cash', 'Stellar', 'Filecoin', 'Cosmos', 'Monero', 'VeChain', 'Algorand', 'Hedera', 'Cronos', 'Quant',
+      'Aave', 'The Graph', 'Decentraland', 'Sandbox', 'Theta Network', 'Axie Infinity', 'Zcash', 'Tezos', 'Elrond', 'Flow',
+      'Mana', 'Chiliz', 'Enjin Coin', 'Basic Attention Token', 'Compound', 'Maker', 'SushiSwap', 'Curve DAO Token', 'Yearn.finance', 'Synthetix',
+      'UMA', 'Bancor', 'Loopring', 'Numeraire', 'Augur', 'Kyber Network', 'Balancer', 'Ren', 'Ocean Protocol', 'Fetch.ai',
+      'Injective Protocol', 'Kava', 'Band Protocol', 'Storj', 'Civic', 'district0x', 'Aragon', 'Gnosis', 'Request Network', 'Power Ledger',
+      'Golem', 'Status', 'Metal', 'TenX', 'Populous', 'Salt', 'Dentacoin', 'Verge', 'Siacoin', 'MaidSafeCoin',
+      'Lisk', 'Stratis', 'Waves', 'Ark', 'Komodo', 'Pivx', 'GameCredits', 'Syscoin', 'DigiByte', 'Vertcoin',
+      'Peercoin', 'Namecoin', 'Primecoin', 'Feathercoin', 'Novacoin', 'Terracoin', 'Megacoin', 'Worldcoin', 'Ixcoin', 'Devcoin'
+    ];
+    
+    const symbols = [
+      'btc', 'eth', 'usdt', 'bnb', 'sol', 'xrp', 'usdc', 'ada', 'doge', 'avax',
+      'trx', 'link', 'matic', 'wbtc', 'dot', 'icp', 'ltc', 'shib', 'uni', 'etc',
+      'bch', 'xlm', 'fil', 'atom', 'xmr', 'vet', 'algo', 'hbar', 'cro', 'qnt',
+      'aave', 'grt', 'mana', 'sand', 'theta', 'axs', 'zec', 'xtz', 'egld', 'flow',
+      'mana', 'chz', 'enj', 'bat', 'comp', 'mkr', 'sushi', 'crv', 'yfi', 'snx',
+      'uma', 'bnt', 'lrc', 'nmr', 'rep', 'knc', 'bal', 'ren', 'ocean', 'fet',
+      'inj', 'kava', 'band', 'storj', 'cvc', 'dnt', 'ant', 'gno', 'req', 'powr',
+      'gnt', 'snt', 'mtl', 'pay', 'ppt', 'salt', 'dent', 'xvg', 'sc', 'maid',
+      'lsk', 'strat', 'waves', 'ark', 'kmd', 'pivx', 'game', 'sys', 'dgb', 'vtc',
+      'ppc', 'nmc', 'xpm', 'ftc', 'nvc', 'trc', 'mec', 'wdc', 'ixc', 'dvc'
+    ];
 
-  const [nftData, setNftData] = useState<NFTCollection[]>([
-    {
-      id: 'bored-ape-yacht-club',
-      name: 'Bored Ape Yacht Club',
-      image: 'https://i.seadn.io/gae/Ju9CkWtV-1Okvf45wo8UctR-M9He2PjILP0oOvxE89AyiPPGtrR3gysu1Zgy0hjd2xKIgjJJtWIc0ybj4Vd7wv8t3pxDGHoJBzDB?auto=format&w=256',
-      floor_price: 12.5,
-      volume_24h: 450.2,
-      volume_change_24h: 15.3,
-      market_cap: 125000,
-      owners: 5400,
-      total_supply: 10000,
-      price_change_1h: 0.8,
-      price_change_6h: 2.1,
-      price_change_18h: -1.5,
-      price_change_24h: 5.2
-    },
-    {
-      id: 'cryptopunks',
-      name: 'CryptoPunks',
-      image: 'https://i.seadn.io/gae/BdxvLseXcfl57BiuQcQYdJ64v-aI8din7WPk0Pgo3qQFhAUH-B6i-dCqqc_mCkRIzULmwzwecnohLhrcH8A9mpWIZqA7ygc52Sr81hE?auto=format&w=256',
-      floor_price: 65.8,
-      volume_24h: 1250.7,
-      volume_change_24h: -8.2,
-      market_cap: 658000,
-      owners: 3500,
-      total_supply: 10000,
-      price_change_1h: -0.5,
-      price_change_6h: -1.2,
-      price_change_18h: -2.8,
-      price_change_24h: -3.1
-    },
-    {
-      id: 'azuki',
-      name: 'Azuki',
-      image: 'https://i.seadn.io/gae/H8jOCJuQokNqGBpkBN5wk1oZwO7LM8bNnrHCaekV2nKjnCqw6UB5oaH8XyNeBDj6bA_n1mjejzhFQUP3O1NfjFLHr3FOaeHcTOOT?auto=format&w=256',
-      floor_price: 8.2,
-      volume_24h: 320.5,
-      volume_change_24h: 22.1,
-      market_cap: 82000,
-      owners: 4200,
-      total_supply: 10000,
-      price_change_1h: 1.5,
-      price_change_6h: 3.2,
-      price_change_18h: 4.1,
-      price_change_24h: 8.7
-    }
-  ]);
+    return Array.from({ length: 100 }, (_, index) => {
+      const basePrice = Math.random() * 50000 + 0.01;
+      const marketCap = basePrice * (Math.random() * 1000000000 + 1000000);
+      
+      return {
+        id: cryptoNames[index].toLowerCase().replace(/\s+/g, '-'),
+        name: cryptoNames[index],
+        symbol: symbols[index],
+        image: `https://assets.coingecko.com/coins/images/${index + 1}/large/${symbols[index]}.png`,
+        current_price: basePrice,
+        market_cap: marketCap,
+        market_cap_rank: index + 1,
+        price_change_percentage_1h: (Math.random() - 0.5) * 10,
+        price_change_percentage_6h: (Math.random() - 0.5) * 20,
+        price_change_percentage_18h: (Math.random() - 0.5) * 30,
+        price_change_percentage_24h: (Math.random() - 0.5) * 40,
+        total_volume: marketCap * (Math.random() * 0.5 + 0.1),
+        circulating_supply: Math.random() * 1000000000 + 1000000,
+        max_supply: Math.random() > 0.3 ? Math.random() * 1000000000 + 1000000 : null,
+        sparkline_in_7d: {
+          price: Array.from({ length: 7 }, () => basePrice * (0.9 + Math.random() * 0.2))
+        }
+      };
+    });
+  };
+
+  const generateMockNFTData = (): NFTCollection[] => {
+    const nftNames = [
+      'Bored Ape Yacht Club', 'CryptoPunks', 'Azuki', 'Mutant Ape Yacht Club', 'Otherdeeds for Otherside', 'Moonbirds', 'Doodles', 'CloneX', 'Art Blocks Curated', 'Pudgy Penguins',
+      'Cool Cats NFT', 'World of Women', 'Veefriends', 'Chromie Squiggle', 'Meebits', 'Hashmasks', 'Gutter Cat Gang', 'Lazy Lions', 'Rumble Kong League', 'Deadfellaz',
+      'Bored Ape Kennel Club', 'Invisible Friends', 'Okay Bears', 'DeGods', 'y00ts', 'Solana Monkey Business', 'Magic Eden', 'Thugbirdz', 'Aurory', 'Star Atlas',
+      'Galactic Geckos', 'SolPunks', 'Degenerate Ape Academy', 'Solana Monkey Business', 'Famous Fox Federation', 'Taiyo Robotics', 'Shadowy Super Coder', 'Catalina Whale Mixer', 'Solana Monkey Business', 'Degen Ape Academy',
+      'Crypto Baristas', 'Solana Monkey Business', 'Thugbirdz', 'Aurory', 'Star Atlas', 'Galactic Geckos', 'SolPunks', 'Degenerate Ape Academy', 'Solana Monkey Business', 'Famous Fox Federation',
+      'Taiyo Robotics', 'Shadowy Super Coder', 'Catalina Whale Mixer', 'Solana Monkey Business', 'Degen Ape Academy', 'Crypto Baristas', 'Solana Monkey Business', 'Thugbirdz', 'Aurory', 'Star Atlas',
+      'Galactic Geckos', 'SolPunks', 'Degenerate Ape Academy', 'Solana Monkey Business', 'Famous Fox Federation', 'Taiyo Robotics', 'Shadowy Super Coder', 'Catalina Whale Mixer', 'Solana Monkey Business', 'Degen Ape Academy',
+      'Crypto Baristas', 'Solana Monkey Business', 'Thugbirdz', 'Aurory', 'Star Atlas', 'Galactic Geckos', 'SolPunks', 'Degenerate Ape Academy', 'Solana Monkey Business', 'Famous Fox Federation',
+      'Taiyo Robotics', 'Shadowy Super Coder', 'Catalina Whale Mixer', 'Solana Monkey Business', 'Degen Ape Academy', 'Crypto Baristas', 'Solana Monkey Business', 'Thugbirdz', 'Aurory', 'Star Atlas',
+      'Galactic Geckos', 'SolPunks', 'Degenerate Ape Academy', 'Solana Monkey Business', 'Famous Fox Federation', 'Taiyo Robotics', 'Shadowy Super Coder', 'Catalina Whale Mixer', 'Solana Monkey Business', 'Degen Ape Academy'
+    ];
+
+    return Array.from({ length: 100 }, (_, index) => {
+      const floorPrice = Math.random() * 100 + 0.1;
+      const volume = Math.random() * 5000 + 10;
+      
+      return {
+        id: nftNames[index].toLowerCase().replace(/\s+/g, '-'),
+        name: nftNames[index],
+        image: `https://i.seadn.io/gae/mock-nft-${index + 1}?auto=format&w=256`,
+        floor_price: floorPrice,
+        volume_24h: volume,
+        volume_change_24h: (Math.random() - 0.5) * 50,
+        market_cap: floorPrice * (Math.random() * 50000 + 1000),
+        owners: Math.floor(Math.random() * 8000 + 500),
+        total_supply: Math.floor(Math.random() * 10000 + 1000),
+        price_change_1h: (Math.random() - 0.5) * 15,
+        price_change_6h: (Math.random() - 0.5) * 25,
+        price_change_18h: (Math.random() - 0.5) * 35,
+        price_change_24h: (Math.random() - 0.5) * 45
+      };
+    });
+  };
+
+  const [cryptoData, setCryptoData] = useState<CryptoCurrency[]>(generateMockCryptoData());
+  const [nftData, setNftData] = useState<NFTCollection[]>(generateMockNFTData());
 
   const handleRefresh = async () => {
     setIsLoading(true);

@@ -1,12 +1,17 @@
 import React from 'react';
 import { Youtube, Instagram, Facebook, Twitter, Sparkles, Clock } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
+import VideoGenerationModal from './services/VideoGenerationModal';
+import PostGenerationModal from './services/PostGenerationModal';
 
 const Services: React.FC = () => {
   const { isDark } = useTheme();
+  const [isVideoModalOpen, setIsVideoModalOpen] = React.useState(false);
+  const [isPostModalOpen, setIsPostModalOpen] = React.useState(false);
 
   return (
-    <section id="services" className="py-20 px-6">
+    <>
+      <section id="services" className="py-20 px-6">
       <div className="container mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
@@ -27,11 +32,13 @@ const Services: React.FC = () => {
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-8">
-            <div className={`backdrop-blur-sm border rounded-2xl p-6 transition-all duration-300 ${
+            <div className={`backdrop-blur-sm border rounded-2xl p-6 transition-all duration-300 cursor-pointer hover:scale-105 ${
               isDark 
                 ? 'bg-black/40 border-cyan-500/20 hover:border-cyan-500/40' 
                 : 'bg-white/40 border-purple-500/20 hover:border-purple-500/40'
-            }`}>
+            }`}
+              onClick={() => setIsVideoModalOpen(true)}
+            >
               <div className="flex items-center mb-4">
                 <Youtube className="w-8 h-8 text-red-500 mr-4" />
                 <h3 className={`text-2xl font-bold transition-colors duration-300 ${
@@ -41,21 +48,23 @@ const Services: React.FC = () => {
               <p className={`mb-4 transition-colors duration-300 ${
                 isDark ? 'text-gray-300' : 'text-gray-600'
               }`}>
-                Automatically discover viral YouTube clips, extract the best moments, and create optimized content for TikTok and Instagram Reels.
+                Enter any theme and automatically generate viral video content optimized for TikTok, Instagram Reels, and other platforms.
               </p>
               <div className={`flex items-center transition-colors duration-300 ${
                 isDark ? 'text-cyan-400' : 'text-purple-600'
               }`}>
                 <Clock className="w-4 h-4 mr-2" />
-                <span className="text-sm">Fully automated in minutes</span>
+                <span className="text-sm">Click to try the generator</span>
               </div>
             </div>
             
-            <div className={`backdrop-blur-sm border rounded-2xl p-6 transition-all duration-300 ${
+            <div className={`backdrop-blur-sm border rounded-2xl p-6 transition-all duration-300 cursor-pointer hover:scale-105 ${
               isDark 
                 ? 'bg-black/40 border-purple-500/20 hover:border-purple-500/40' 
                 : 'bg-white/40 border-pink-500/20 hover:border-pink-500/40'
-            }`}>
+            }`}
+              onClick={() => setIsPostModalOpen(true)}
+            >
               <div className="flex items-center mb-4">
                 <Sparkles className={`w-8 h-8 mr-4 transition-colors duration-300 ${
                   isDark ? 'text-purple-500' : 'text-pink-600'
@@ -67,13 +76,13 @@ const Services: React.FC = () => {
               <p className={`mb-4 transition-colors duration-300 ${
                 isDark ? 'text-gray-300' : 'text-gray-600'
               }`}>
-                Generate stunning images and engaging text content related to trending topics using advanced AI models.
+                Create engaging social media posts with AI-generated images and text content for any theme or topic.
               </p>
               <div className={`flex items-center transition-colors duration-300 ${
                 isDark ? 'text-purple-400' : 'text-pink-600'
               }`}>
                 <Clock className="w-4 h-4 mr-2" />
-                <span className="text-sm">High-quality content in seconds</span>
+                <span className="text-sm">Click to try the generator</span>
               </div>
             </div>
           </div>
@@ -137,8 +146,19 @@ const Services: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
-    </section>
+        </div>
+      </section>
+      
+      <VideoGenerationModal 
+        isOpen={isVideoModalOpen} 
+        onClose={() => setIsVideoModalOpen(false)} 
+      />
+      
+      <PostGenerationModal 
+        isOpen={isPostModalOpen} 
+        onClose={() => setIsPostModalOpen(false)} 
+      />
+    </>
   );
 };
 
