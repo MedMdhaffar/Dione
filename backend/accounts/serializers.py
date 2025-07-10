@@ -2,9 +2,6 @@ from rest_framework import serializers
 from django.core.validators import validate_email as django_validate_email
 from django.core.exceptions import ValidationError
 from .models import User
-from django.contrib.auth import authenticate
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-
 
 
 class SignupSerializer(serializers.ModelSerializer):
