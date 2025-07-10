@@ -1,0 +1,9 @@
+{
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "typescript.tsserver.useProjectReferences": true,
+    "eslint.validate": [
+        "javascript",
+        "typescript",
+        "typescriptreact"
+    ]
+}
