@@ -7,6 +7,8 @@ from django.core.cache import cache
 from .serializers import SignupSerializer
 import random
 
+
+
 @api_view(['POST'])
 def signup(request):
     serializer = SignupSerializer(data=request.data)
