@@ -1,6 +1,16 @@
-import React, { useState } from 'react';
-import { X, User, Mail, Lock, Eye, EyeOff, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
-import { useTheme } from '../contexts/ThemeContext';
+import React, { useState } from "react";
+import {
+  X,
+  User,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  Loader2,
+  CheckCircle,
+  AlertCircle,
+} from "lucide-react";
+import { useTheme } from "../contexts/ThemeContext";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -26,10 +36,10 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const { isDark } = useTheme();
   const [isSignUp, setIsSignUp] = useState(false);
   const [formData, setFormData] = useState<FormData>({
-    email: '',
-    password: '',
-    name: '',
-    confirmPassword: ''
+    email: "",
+    password: "",
+    name: "",
+    confirmPassword: "",
   });
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -38,8 +48,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const [isSuccess, setIsSuccess] = useState(false);
 
   // MISSING STATES ADDED
-  const [step, setStep] = useState<'form' | 'verify'>('form');
-  const [verificationCode, setVerificationCode] = useState('');
+  const [step, setStep] = useState<"form" | "verify">("form");
+  const [verificationCode, setVerificationCode] = useState("");
 
   if (!isOpen) return null;
 
@@ -49,38 +59,40 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     // Email validation
     const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
     if (!formData.email) {
-      newErrors.email = 'Email is required';
+      newErrors.email = "Email is required";
     } else if (!emailRegex.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
+      newErrors.email = "Please enter a valid email address";
     }
 
     // Password validation
     if (!formData.password) {
-      newErrors.password = 'Password is required';
+      newErrors.password = "Password is required";
     } else if (formData.password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters';
+      newErrors.password = "Password must be at least 8 characters";
     }
 
     // Sign up specific validations
     if (isSignUp) {
       // Name validation
       if (!formData.name?.trim()) {
-        newErrors.name = 'Name is required';
+        newErrors.name = "Name is required";
       } else if (formData.name.trim().length < 2) {
-        newErrors.name = 'Name must be at least 2 characters';
+        newErrors.name = "Name must be at least 2 characters";
       }
 
       // Password strength validation for sign up
-      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/;
+      const passwordRegex =
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/;
       if (formData.password && !passwordRegex.test(formData.password)) {
-        newErrors.password = 'Password must contain uppercase, lowercase, number, and special character';
+        newErrors.password =
+          "Password must contain uppercase, lowercase, number, and special character";
       }
 
       // Confirm password validation
       if (!formData.confirmPassword) {
-        newErrors.confirmPassword = 'Please confirm your password';
+        newErrors.confirmPassword = "Please confirm your password";
       } else if (formData.password !== formData.confirmPassword) {
-        newErrors.confirmPassword = 'Passwords do not match';
+        newErrors.confirmPassword = "Passwords do not match";
       }
     }
 
@@ -90,11 +102,11 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
 
     // Clear specific error when user starts typing
     if (errors[name as keyof ValidationErrors]) {
-      setErrors(prev => ({ ...prev, [name]: undefined }));
+      setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
   };
 
@@ -107,22 +119,22 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     setErrors({});
 
     try {
-      const endpoint = isSignUp ? '/accounts/signup/' : '/accounts/signin/';
+      const endpoint = isSignUp ? "/accounts/signup/" : "/accounts/signin/";
       const payload = isSignUp
         ? {
             username: formData.name?.trim(),
             email: formData.email.toLowerCase().trim(),
-            password: formData.password
+            password: formData.password,
           }
         : {
-            email: formData.email.toLowerCase().trim(),
-            password: formData.password
+            email: formData.email?.trim(),
+            password: formData.password,
           };
 
       const response = await fetch(`http://localhost:8000${endpoint}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
@@ -137,14 +149,14 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
           });
           setErrors(backendErrors);
         } else {
-          setErrors({ general: data.detail || data.error || 'Request failed' });
+          setErrors({ general: data.detail || data.error || "Request failed" });
         }
         return;
       }
 
       // If signup, go to verify step instead of success immediately
       if (isSignUp) {
-        setStep('verify');
+        setStep("verify");
         setIsLoading(false);
         return;
       }
@@ -152,16 +164,17 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       setIsSuccess(true);
 
       if (data.token) {
-        localStorage.setItem('authToken', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
+        localStorage.setItem("authToken", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
       }
 
-      setFormData({ email: '', password: '', name: '', confirmPassword: '' });
-      console.log(`${isSignUp ? 'Registration' : 'Login'} successful:`, data);
-
+      setFormData({ email: "", password: "", name: "", confirmPassword: "" });
+      console.log(`${isSignUp ? "Registration" : "Login"} successful:`, data);
     } catch (error) {
-      console.error('Error:', error);
-      setErrors({ general: 'Network error. Please check your connection and try again.' });
+      console.error("Error:", error);
+      setErrors({
+        general: "Network error. Please check your connection and try again.",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -171,9 +184,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     setIsLoading(true);
     setErrors({});
     try {
-      const response = await fetch('http://localhost:8000/accounts/verify/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("http://localhost:8000/accounts/verify/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           username: formData.name,
           code: verificationCode,
@@ -182,15 +195,15 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
       const data = await response.json();
       if (!response.ok) {
-        setErrors({ general: data.error || 'Verification failed' });
+        setErrors({ general: data.error || "Verification failed" });
       } else {
         setIsSuccess(true);
-        setStep('form'); // reset step after success
-        setVerificationCode('');
-        setFormData({ email: '', password: '', name: '', confirmPassword: '' });
+        setStep("form"); // reset step after success
+        setVerificationCode("");
+        setFormData({ email: "", password: "", name: "", confirmPassword: "" });
       }
     } catch (err) {
-      setErrors({ general: 'Network error during verification' });
+      setErrors({ general: "Network error during verification" });
     } finally {
       setIsLoading(false);
     }
@@ -199,42 +212,50 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const toggleMode = () => {
     setIsSignUp(!isSignUp);
     setFormData({
-      email: '',
-      password: '',
-      name: '',
-      confirmPassword: ''
+      email: "",
+      password: "",
+      name: "",
+      confirmPassword: "",
     });
     setErrors({});
     setIsSuccess(false);
-    setStep('form');
-    setVerificationCode('');
+    setStep("form");
+    setVerificationCode("");
   };
 
   const handleClose = () => {
     setFormData({
-      email: '',
-      password: '',
-      name: '',
-      confirmPassword: ''
+      email: "",
+      password: "",
+      name: "",
+      confirmPassword: "",
     });
     setErrors({});
     setIsSuccess(false);
     setIsSignUp(false);
-    setStep('form');
-    setVerificationCode('');
+    setStep("form");
+    setVerificationCode("");
     onClose();
   };
 
-  if (step === 'verify') {
+  if (step === "verify") {
     return (
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-6 z-50">
-        <div className={`backdrop-blur-sm border rounded-2xl p-8 w-full max-w-md text-center ${
-          isDark ? 'bg-black/40 border-cyan-500/20' : 'bg-white/40 border-purple-500/20'
-        }`}>
-          <h2 className={`text-2xl font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-800'}`}>
+        <div
+          className={`backdrop-blur-sm border rounded-2xl p-8 w-full max-w-md text-center ${
+            isDark
+              ? "bg-black/40 border-cyan-500/20"
+              : "bg-white/40 border-purple-500/20"
+          }`}
+        >
+          <h2
+            className={`text-2xl font-bold mb-4 ${
+              isDark ? "text-white" : "text-gray-800"
+            }`}
+          >
             Verify your Email
           </h2>
-          <p className={`mb-6 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+          <p className={`mb-6 ${isDark ? "text-gray-300" : "text-gray-600"}`}>
             A verification code was sent to your email. Please enter it below.
           </p>
           <input
@@ -244,8 +265,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             placeholder="Enter verification code"
             className={`w-full px-4 py-3 rounded-lg border mb-4 focus:outline-none focus:ring-2 ${
               isDark
-                ? 'bg-black/20 border-cyan-500/50 text-white placeholder-gray-400 focus:ring-cyan-400'
-                : 'bg-white/50 border-purple-500/50 text-gray-800 placeholder-gray-600 focus:ring-purple-400'
+                ? "bg-black/20 border-cyan-500/50 text-white placeholder-gray-400 focus:ring-cyan-400"
+                : "bg-white/50 border-purple-500/50 text-gray-800 placeholder-gray-600 focus:ring-purple-400"
             }`}
           />
 
@@ -254,7 +275,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             disabled={isLoading}
             className="w-full py-3 bg-purple-600 text-white rounded-full font-semibold hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isLoading ? 'Verifying...' : 'Verify Account'}
+            {isLoading ? "Verifying..." : "Verify Account"}
           </button>
           {errors.general && (
             <p className="mt-4 text-red-500 text-sm">{errors.general}</p>
@@ -267,34 +288,39 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   if (isSuccess) {
     return (
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-6 z-50">
-        <div className={`backdrop-blur-sm border rounded-2xl p-8 w-full max-w-md text-center transition-all duration-300 ${
-          isDark
-            ? 'bg-black/40 border-green-500/20'
-            : 'bg-white/40 border-green-500/20'
-        }`}>
+        <div
+          className={`backdrop-blur-sm border rounded-2xl p-8 w-full max-w-md text-center transition-all duration-300 ${
+            isDark
+              ? "bg-black/40 border-green-500/20"
+              : "bg-white/40 border-green-500/20"
+          }`}
+        >
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-          <h2 className={`text-2xl font-bold mb-4 transition-colors duration-300 ${
-            isDark ? 'text-white' : 'text-gray-800'
-          }`}>
-            {isSignUp ? 'Welcome to Trendwave!' : 'Welcome Back!'}
+          <h2
+            className={`text-2xl font-bold mb-4 transition-colors duration-300 ${
+              isDark ? "text-white" : "text-gray-800"
+            }`}
+          >
+            {isSignUp ? "Welcome to Trendwave!" : "Welcome Back!"}
           </h2>
-          <p className={`mb-6 transition-colors duration-300 ${
-            isDark ? 'text-gray-300' : 'text-gray-600'
-          }`}>
+          <p
+            className={`mb-6 transition-colors duration-300 ${
+              isDark ? "text-gray-300" : "text-gray-600"
+            }`}
+          >
             {isSignUp
-              ? 'Your account has been created successfully. You can now start using our AI-powered social media automation platform.'
-              : 'You have successfully logged in. Ready to automate your social media?'
-            }
+              ? "Your account has been created successfully. You can now start using our AI-powered social media automation platform."
+              : "You have successfully logged in. Ready to automate your social media?"}
           </p>
           <button
             onClick={handleClose}
             className={`w-full py-3 rounded-full text-white font-semibold transition-all duration-300 transform hover:scale-105 ${
               isDark
-                ? 'bg-gradient-to-r from-cyan-500 to-purple-500 hover:shadow-cyan-500/25'
-                : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:shadow-purple-500/25'
+                ? "bg-gradient-to-r from-cyan-500 to-purple-500 hover:shadow-cyan-500/25"
+                : "bg-gradient-to-r from-purple-500 to-pink-500 hover:shadow-purple-500/25"
             }`}
           >
-            Continue to Dashboard
+            Welcome
           </button>
         </div>
       </div>
@@ -303,18 +329,20 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-6 z-50">
-      <div className={`backdrop-blur-sm border rounded-2xl p-8 w-full max-w-md transition-all duration-300 relative ${
-        isDark
-          ? 'bg-black/40 border-cyan-500/20'
-          : 'bg-white/40 border-purple-500/20'
-      }`}>
+      <div
+        className={`backdrop-blur-sm border rounded-2xl p-8 w-full max-w-md transition-all duration-300 relative ${
+          isDark
+            ? "bg-black/40 border-cyan-500/20"
+            : "bg-white/40 border-purple-500/20"
+        }`}
+      >
         {/* Close Button */}
         <button
           onClick={handleClose}
           className={`absolute top-4 right-4 p-2 rounded-full transition-colors duration-300 ${
             isDark
-              ? 'text-gray-400 hover:text-white hover:bg-white/10'
-              : 'text-gray-600 hover:text-gray-800 hover:bg-black/10'
+              ? "text-gray-400 hover:text-white hover:bg-white/10"
+              : "text-gray-600 hover:text-gray-800 hover:bg-black/10"
           }`}
         >
           <X className="w-5 h-5" />
@@ -326,43 +354,54 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               src="/Dione.png"
               alt="DIONE Team"
               className={`w-12 h-12 rounded-full ring-2 transition-all duration-300 ${
-                isDark ? 'ring-cyan-400/50' : 'ring-purple-500/50'
+                isDark ? "ring-cyan-400/50" : "ring-purple-500/50"
               }`}
             />
             <div>
-              <h1 className={`text-2xl font-bold bg-gradient-to-r bg-clip-text text-transparent transition-all duration-300 ${
-                isDark
-                  ? 'from-cyan-400 to-purple-400'
-                  : 'from-purple-600 to-pink-600'
-              }`}>
+              <h1
+                className={`text-2xl font-bold bg-gradient-to-r bg-clip-text text-transparent transition-all duration-300 ${
+                  isDark
+                    ? "from-cyan-400 to-purple-400"
+                    : "from-purple-600 to-pink-600"
+                }`}
+              >
                 Trendwave
               </h1>
-              <p className={`text-xs transition-colors duration-300 ${
-                isDark ? 'text-gray-400' : 'text-gray-600'
-              }`}>by TakTik Team</p>
+              <p
+                className={`text-xs transition-colors duration-300 ${
+                  isDark ? "text-gray-400" : "text-gray-600"
+                }`}
+              >
+                by TakTik Team
+              </p>
             </div>
           </div>
-          <h2 className={`text-2xl font-bold mb-2 transition-colors duration-300 ${
-            isDark ? 'text-white' : 'text-gray-800'
-          }`}>
-            {isSignUp ? 'Join Trendwave' : 'Welcome Back'}
+          <h2
+            className={`text-2xl font-bold mb-2 transition-colors duration-300 ${
+              isDark ? "text-white" : "text-gray-800"
+            }`}
+          >
+            {isSignUp ? "Join Trendwave" : "Welcome Back"}
           </h2>
-          <p className={`transition-colors duration-300 ${
-            isDark ? 'text-gray-300' : 'text-gray-600'
-          }`}>
+          <p
+            className={`transition-colors duration-300 ${
+              isDark ? "text-gray-300" : "text-gray-600"
+            }`}
+          >
             {isSignUp
-              ? 'Start automating your social media with AI'
-              : 'Sign in to your account'
-            }
+              ? "Start automating your social media with AI"
+              : "Sign in to your account"}
           </p>
         </div>
 
         {errors.general && (
-          <div className={`mb-6 p-4 rounded-lg border flex items-center space-x-3 ${
-            isDark
-              ? 'bg-red-500/10 border-red-500/20 text-red-400'
-              : 'bg-red-50 border-red-200 text-red-600'
-          }`}>
+          <div
+            className={`mb-6 p-4 rounded-lg border flex items-center space-x-3 ${
+              isDark
+                ? "bg-red-500/10 border-red-500/20 text-red-400"
+                : "bg-red-50 border-red-200 text-red-600"
+            }`}
+          >
             <AlertCircle className="w-5 h-5 flex-shrink-0" />
             <span className="text-sm">{errors.general}</span>
           </div>
@@ -372,36 +411,42 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
           {/* Name Field - Only for Sign Up */}
           {isSignUp && (
             <div>
-              <label className={`block text-sm font-medium mb-2 transition-colors duration-300 ${
-                isDark ? 'text-gray-300' : 'text-gray-700'
-              }`}>
+              <label
+                className={`block text-sm font-medium mb-2 transition-colors duration-300 ${
+                  isDark ? "text-gray-300" : "text-gray-700"
+                }`}
+              >
                 Full Name
               </label>
               <div className="relative">
-                <User className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-colors duration-300 ${
-                  isDark ? 'text-gray-400' : 'text-gray-500'
-                }`} />
+                <User
+                  className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-colors duration-300 ${
+                    isDark ? "text-gray-400" : "text-gray-500"
+                  }`}
+                />
                 <input
                   type="text"
                   name="name"
-                  value={formData.name || ''}
+                  value={formData.name || ""}
                   onChange={handleInputChange}
                   className={`w-full pl-10 pr-4 py-3 rounded-lg border transition-all duration-300 focus:outline-none focus:ring-2 ${
                     errors.name
                       ? isDark
-                        ? 'border-red-500/50 bg-black/20 text-white focus:ring-red-500/20'
-                        : 'border-red-300 bg-white/50 text-gray-800 focus:ring-red-200'
+                        ? "border-red-500/50 bg-black/20 text-white focus:ring-red-500/20"
+                        : "border-red-300 bg-white/50 text-gray-800 focus:ring-red-200"
                       : isDark
-                        ? 'border-gray-600 bg-black/20 text-white focus:ring-cyan-500/20 focus:border-cyan-500/50'
-                        : 'border-gray-300 bg-white/50 text-gray-800 focus:ring-purple-200 focus:border-purple-400'
+                      ? "border-gray-600 bg-black/20 text-white focus:ring-cyan-500/20 focus:border-cyan-500/50"
+                      : "border-gray-300 bg-white/50 text-gray-800 focus:ring-purple-200 focus:border-purple-400"
                   }`}
                   placeholder="Enter your full name"
                 />
               </div>
               {errors.name && (
-                <p className={`mt-1 text-sm transition-colors duration-300 ${
-                  isDark ? 'text-red-400' : 'text-red-600'
-                }`}>
+                <p
+                  className={`mt-1 text-sm transition-colors duration-300 ${
+                    isDark ? "text-red-400" : "text-red-600"
+                  }`}
+                >
                   {errors.name}
                 </p>
               )}
@@ -410,15 +455,19 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
           {/* Email Field */}
           <div>
-            <label className={`block text-sm font-medium mb-2 transition-colors duration-300 ${
-              isDark ? 'text-gray-300' : 'text-gray-700'
-            }`}>
+            <label
+              className={`block text-sm font-medium mb-2 transition-colors duration-300 ${
+                isDark ? "text-gray-300" : "text-gray-700"
+              }`}
+            >
               Email Address
             </label>
             <div className="relative">
-              <Mail className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-colors duration-300 ${
-                isDark ? 'text-gray-400' : 'text-gray-500'
-              }`} />
+              <Mail
+                className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-colors duration-300 ${
+                  isDark ? "text-gray-400" : "text-gray-500"
+                }`}
+              />
               <input
                 type="email"
                 name="email"
@@ -427,19 +476,21 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 className={`w-full pl-10 pr-4 py-3 rounded-lg border transition-all duration-300 focus:outline-none focus:ring-2 ${
                   errors.email
                     ? isDark
-                      ? 'border-red-500/50 bg-black/20 text-white focus:ring-red-500/20'
-                      : 'border-red-300 bg-white/50 text-gray-800 focus:ring-red-200'
+                      ? "border-red-500/50 bg-black/20 text-white focus:ring-red-500/20"
+                      : "border-red-300 bg-white/50 text-gray-800 focus:ring-red-200"
                     : isDark
-                      ? 'border-gray-600 bg-black/20 text-white focus:ring-cyan-500/20 focus:border-cyan-500/50'
-                      : 'border-gray-300 bg-white/50 text-gray-800 focus:ring-purple-200 focus:border-purple-400'
+                    ? "border-gray-600 bg-black/20 text-white focus:ring-cyan-500/20 focus:border-cyan-500/50"
+                    : "border-gray-300 bg-white/50 text-gray-800 focus:ring-purple-200 focus:border-purple-400"
                 }`}
                 placeholder="Enter your email"
               />
             </div>
             {errors.email && (
-              <p className={`mt-1 text-sm transition-colors duration-300 ${
-                isDark ? 'text-red-400' : 'text-red-600'
-              }`}>
+              <p
+                className={`mt-1 text-sm transition-colors duration-300 ${
+                  isDark ? "text-red-400" : "text-red-600"
+                }`}
+              >
                 {errors.email}
               </p>
             )}
@@ -447,28 +498,32 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
           {/* Password Field */}
           <div>
-            <label className={`block text-sm font-medium mb-2 transition-colors duration-300 ${
-              isDark ? 'text-gray-300' : 'text-gray-700'
-            }`}>
+            <label
+              className={`block text-sm font-medium mb-2 transition-colors duration-300 ${
+                isDark ? "text-gray-300" : "text-gray-700"
+              }`}
+            >
               Password
             </label>
             <div className="relative">
-              <Lock className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-colors duration-300 ${
-                isDark ? 'text-gray-400' : 'text-gray-500'
-              }`} />
+              <Lock
+                className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-colors duration-300 ${
+                  isDark ? "text-gray-400" : "text-gray-500"
+                }`}
+              />
               <input
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? "text" : "password"}
                 name="password"
                 value={formData.password}
                 onChange={handleInputChange}
                 className={`w-full pl-10 pr-12 py-3 rounded-lg border transition-all duration-300 focus:outline-none focus:ring-2 ${
                   errors.password
                     ? isDark
-                      ? 'border-red-500/50 bg-black/20 text-white focus:ring-red-500/20'
-                      : 'border-red-300 bg-white/50 text-gray-800 focus:ring-red-200'
+                      ? "border-red-500/50 bg-black/20 text-white focus:ring-red-500/20"
+                      : "border-red-300 bg-white/50 text-gray-800 focus:ring-red-200"
                     : isDark
-                      ? 'border-gray-600 bg-black/20 text-white focus:ring-cyan-500/20 focus:border-cyan-500/50'
-                      : 'border-gray-300 bg-white/50 text-gray-800 focus:ring-purple-200 focus:border-purple-400'
+                    ? "border-gray-600 bg-black/20 text-white focus:ring-cyan-500/20 focus:border-cyan-500/50"
+                    : "border-gray-300 bg-white/50 text-gray-800 focus:ring-purple-200 focus:border-purple-400"
                 }`}
                 placeholder="Enter your password"
               />
@@ -477,13 +532,19 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
               >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                {showPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
               </button>
             </div>
             {errors.password && (
-              <p className={`mt-1 text-sm transition-colors duration-300 ${
-                isDark ? 'text-red-400' : 'text-red-600'
-              }`}>
+              <p
+                className={`mt-1 text-sm transition-colors duration-300 ${
+                  isDark ? "text-red-400" : "text-red-600"
+                }`}
+              >
                 {errors.password}
               </p>
             )}
@@ -492,28 +553,32 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
           {/* Confirm Password - Only for Sign Up */}
           {isSignUp && (
             <div>
-              <label className={`block text-sm font-medium mb-2 transition-colors duration-300 ${
-                isDark ? 'text-gray-300' : 'text-gray-700'
-              }`}>
+              <label
+                className={`block text-sm font-medium mb-2 transition-colors duration-300 ${
+                  isDark ? "text-gray-300" : "text-gray-700"
+                }`}
+              >
                 Confirm Password
               </label>
               <div className="relative">
-                <Lock className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-colors duration-300 ${
-                  isDark ? 'text-gray-400' : 'text-gray-500'
-                }`} />
+                <Lock
+                  className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-colors duration-300 ${
+                    isDark ? "text-gray-400" : "text-gray-500"
+                  }`}
+                />
                 <input
-                  type={showConfirmPassword ? 'text' : 'password'}
+                  type={showConfirmPassword ? "text" : "password"}
                   name="confirmPassword"
-                  value={formData.confirmPassword || ''}
+                  value={formData.confirmPassword || ""}
                   onChange={handleInputChange}
                   className={`w-full pl-10 pr-12 py-3 rounded-lg border transition-all duration-300 focus:outline-none focus:ring-2 ${
                     errors.confirmPassword
                       ? isDark
-                        ? 'border-red-500/50 bg-black/20 text-white focus:ring-red-500/20'
-                        : 'border-red-300 bg-white/50 text-gray-800 focus:ring-red-200'
+                        ? "border-red-500/50 bg-black/20 text-white focus:ring-red-500/20"
+                        : "border-red-300 bg-white/50 text-gray-800 focus:ring-red-200"
                       : isDark
-                        ? 'border-gray-600 bg-black/20 text-white focus:ring-cyan-500/20 focus:border-cyan-500/50'
-                        : 'border-gray-300 bg-white/50 text-gray-800 focus:ring-purple-200 focus:border-purple-400'
+                      ? "border-gray-600 bg-black/20 text-white focus:ring-cyan-500/20 focus:border-cyan-500/50"
+                      : "border-gray-300 bg-white/50 text-gray-800 focus:ring-purple-200 focus:border-purple-400"
                   }`}
                   placeholder="Confirm your password"
                 />
@@ -522,13 +587,19 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
                 >
-                  {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {showConfirmPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
                 </button>
               </div>
               {errors.confirmPassword && (
-                <p className={`mt-1 text-sm transition-colors duration-300 ${
-                  isDark ? 'text-red-400' : 'text-red-600'
-                }`}>
+                <p
+                  className={`mt-1 text-sm transition-colors duration-300 ${
+                    isDark ? "text-red-400" : "text-red-600"
+                  }`}
+                >
                   {errors.confirmPassword}
                 </p>
               )}
@@ -540,29 +611,35 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             disabled={isLoading}
             className={`w-full py-3 rounded-full text-white font-semibold transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed ${
               isDark
-                ? 'bg-gradient-to-r from-cyan-500 to-purple-500 hover:shadow-cyan-500/25'
-                : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:shadow-purple-500/25'
+                ? "bg-gradient-to-r from-cyan-500 to-purple-500 hover:shadow-cyan-500/25"
+                : "bg-gradient-to-r from-purple-500 to-pink-500 hover:shadow-purple-500/25"
             }`}
           >
             {isLoading ? (
               <Loader2 className="w-5 h-5 mx-auto animate-spin" />
+            ) : isSignUp ? (
+              "Create Account"
             ) : (
-              isSignUp ? 'Create Account' : 'Sign In'
+              "Sign In"
             )}
           </button>
         </form>
 
-        <p className={`mt-6 text-center text-sm transition-colors duration-300 ${
-          isDark ? 'text-gray-400' : 'text-gray-600'
-        }`}>
-          {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
+        <p
+          className={`mt-6 text-center text-sm transition-colors duration-300 ${
+            isDark ? "text-gray-400" : "text-gray-600"
+          }`}
+        >
+          {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
           <button
             onClick={toggleMode}
             className={`font-semibold hover:underline focus:outline-none ${
-              isDark ? 'text-cyan-400 hover:text-cyan-600' : 'text-purple-600 hover:text-purple-800'
+              isDark
+                ? "text-cyan-400 hover:text-cyan-600"
+                : "text-purple-600 hover:text-purple-800"
             }`}
           >
-            {isSignUp ? 'Sign In' : 'Sign Up'}
+            {isSignUp ? "Sign In" : "Sign Up"}
           </button>
         </p>
       </div>
