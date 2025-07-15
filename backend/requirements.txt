@@ -4,3 +4,12 @@ django-cors-headers
 djangorestframework-simplejwt
 python-dotenv
 py3-validate-email
+
+
+# ========== Youtube ========== #
+
+yt-dlp
+numpy
+google-api-python-client
+youtube-transcript-api
+openai

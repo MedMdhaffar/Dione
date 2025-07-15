@@ -25,8 +25,8 @@ const VideoGenerationModal: React.FC<VideoGenerationModalProps> = ({ isOpen, onC
   ];
 
   const togglePlatform = (platformId: string) => {
-    setSelectedPlatforms(prev => 
-      prev.includes(platformId) 
+    setSelectedPlatforms(prev =>
+      prev.includes(platformId)
         ? prev.filter(p => p !== platformId)
         : [...prev, platformId]
     );
@@ -34,15 +34,27 @@ const VideoGenerationModal: React.FC<VideoGenerationModalProps> = ({ isOpen, onC
 
   const handleGenerate = async () => {
     if (!theme.trim()) return;
-    
+
     setIsGenerating(true);
+    setGeneratedVideo(null);
     
-    // Simulate video generation
-    await new Promise(resolve => setTimeout(resolve, 4000));
-    
-    // Mock generated video URL
-    setGeneratedVideo(`https://example.com/generated-video-${theme.toLowerCase().replace(/\s+/g, '-')}.mp4`);
-    setIsGenerating(false);
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/vid_gen/generate-video/${encodeURIComponent(theme.trim())}/`
+      );
+      const data = await response.json();
+
+      if (response.ok) {
+        setGeneratedVideo(data.message || "Video generated successfully.");
+      } else {
+        setGeneratedVideo(data.message || "Video generation failed.");
+      }
+    } catch (error) {
+      console.error("Error calling backend:", error);
+      setGeneratedVideo("An error occurred while generating the video.");
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const handleReset = () => {
@@ -197,22 +209,8 @@ const VideoGenerationModal: React.FC<VideoGenerationModalProps> = ({ isOpen, onC
               <h3 className={`text-xl font-bold mb-2 transition-colors duration-300 ${
                 isDark ? 'text-white' : 'text-gray-800'
               }`}>
-                Video Generated Successfully!
+                {generatedVideo}
               </h3>
-              <p className={`mb-4 transition-colors duration-300 ${
-                isDark ? 'text-gray-300' : 'text-gray-600'
-              }`}>
-                Your "{theme}" themed video has been created and optimized for {selectedPlatforms.join(', ')}.
-              </p>
-              <div className={`p-4 rounded-lg ${
-                isDark ? 'bg-black/20' : 'bg-white/50'
-              }`}>
-                <p className={`text-sm font-mono transition-colors duration-300 ${
-                  isDark ? 'text-cyan-400' : 'text-purple-600'
-                }`}>
-                  {generatedVideo}
-                </p>
-              </div>
             </div>
             
             <div className="flex space-x-4">
