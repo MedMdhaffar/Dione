@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, FileText, Instagram, Facebook, Twitter, Loader2, Image, Sparkles } from 'lucide-react';
+import { X, FileText, Twitter, Loader2, Sparkles } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 
 interface PostGenerationModalProps {
@@ -21,8 +21,6 @@ const PostGenerationModal: React.FC<PostGenerationModalProps> = ({ isOpen, onClo
   if (!isOpen) return null;
 
   const platforms = [
-    { id: 'instagram', name: 'Instagram', icon: Instagram, color: 'from-purple-500 to-pink-500' },
-    { id: 'facebook', name: 'Facebook', icon: Facebook, color: 'from-blue-500 to-blue-600' },
     { id: 'twitter', name: 'Twitter/X', icon: Twitter, color: 'from-cyan-500 to-blue-500' },
   ];
 
@@ -38,11 +36,10 @@ const PostGenerationModal: React.FC<PostGenerationModalProps> = ({ isOpen, onClo
     if (!theme.trim()) return;
     
     setIsGenerating(true);
-    
+
     // Simulate post generation
     await new Promise(resolve => setTimeout(resolve, 3000));
     
-    // Mock generated post content
     const mockPost = {
       text: `🔥 Exciting news in the world of ${theme}! Here's what's trending and why you should pay attention. The future is looking bright! ✨`,
       image: `https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=400&fit=crop&crop=center`,
@@ -67,7 +64,6 @@ const PostGenerationModal: React.FC<PostGenerationModalProps> = ({ isOpen, onClo
           ? 'bg-black/40 border-cyan-500/20' 
           : 'bg-white/40 border-purple-500/20'
       }`}>
-        {/* Close Button */}
         <button
           onClick={onClose}
           className={`absolute top-4 right-4 p-2 rounded-full transition-colors duration-300 ${
@@ -79,7 +75,6 @@ const PostGenerationModal: React.FC<PostGenerationModalProps> = ({ isOpen, onClo
           <X className="w-5 h-5" />
         </button>
 
-        {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center space-x-4 mb-4">
             <div className={`w-12 h-12 rounded-full bg-gradient-to-r ${
@@ -104,7 +99,6 @@ const PostGenerationModal: React.FC<PostGenerationModalProps> = ({ isOpen, onClo
 
         {!generatedPost ? (
           <>
-            {/* Theme Input */}
             <div className="mb-8">
               <h3 className={`text-lg font-semibold mb-4 transition-colors duration-300 ${
                 isDark ? 'text-white' : 'text-gray-800'
@@ -124,7 +118,6 @@ const PostGenerationModal: React.FC<PostGenerationModalProps> = ({ isOpen, onClo
               />
             </div>
 
-            {/* Platform Selection */}
             <div className="mb-8">
               <h3 className={`text-lg font-semibold mb-4 transition-colors duration-300 ${
                 isDark ? 'text-white' : 'text-gray-800'
@@ -166,7 +159,6 @@ const PostGenerationModal: React.FC<PostGenerationModalProps> = ({ isOpen, onClo
               </div>
             </div>
 
-            {/* Generate Button */}
             <button
               onClick={handleGenerate}
               disabled={!theme.trim() || selectedPlatforms.length === 0 || isGenerating}
@@ -190,7 +182,6 @@ const PostGenerationModal: React.FC<PostGenerationModalProps> = ({ isOpen, onClo
             </button>
           </>
         ) : (
-          /* Generated Post Result */
           <div className="text-center">
             <div className={`mb-6 p-6 rounded-xl border ${
               isDark 
@@ -207,8 +198,6 @@ const PostGenerationModal: React.FC<PostGenerationModalProps> = ({ isOpen, onClo
               }`}>
                 Post Generated Successfully!
               </h3>
-              
-              {/* Generated Content Preview */}
               <div className={`p-4 rounded-lg mb-4 text-left ${
                 isDark ? 'bg-black/20' : 'bg-white/50'
               }`}>
@@ -241,14 +230,13 @@ const PostGenerationModal: React.FC<PostGenerationModalProps> = ({ isOpen, onClo
                   </div>
                 </div>
               </div>
-              
               <p className={`text-sm transition-colors duration-300 ${
                 isDark ? 'text-gray-400' : 'text-gray-600'
               }`}>
                 Optimized for {selectedPlatforms.join(', ')}
               </p>
             </div>
-            
+
             <div className="flex space-x-4">
               <button
                 onClick={handleReset}

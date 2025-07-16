@@ -16,11 +16,12 @@ const Footer: React.FC = () => {
     >
       <div className="container mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          {/* Brand + Description */}
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-4 mb-4">
               <img
                 src="/Dione.png"
-                alt="DIONE Team"
+                alt="DIONE Logo"
                 className={`w-12 h-12 rounded-full ring-2 transition-all duration-300 ${
                   isDark ? "ring-cyan-400/50" : "ring-purple-500/50"
                 }`}
@@ -54,170 +55,69 @@ const Footer: React.FC = () => {
               team under DIONE.
             </p>
             <div className="flex space-x-4">
-              <a
-                href="#"
-                className={`w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform ${
-                  isDark
-                    ? "bg-gradient-to-r from-cyan-500 to-purple-500"
-                    : "bg-gradient-to-r from-purple-500 to-pink-500"
-                }`}
-              >
-                <Github className="w-5 h-5 text-white" />
-              </a>
-              <a
-                href="#"
-                className={`w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform ${
-                  isDark
-                    ? "bg-gradient-to-r from-cyan-500 to-purple-500"
-                    : "bg-gradient-to-r from-purple-500 to-pink-500"
-                }`}
-              >
-                <Twitter className="w-5 h-5 text-white" />
-              </a>
-              <a
-                href="#"
-                className={`w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform ${
-                  isDark
-                    ? "bg-gradient-to-r from-cyan-500 to-purple-500"
-                    : "bg-gradient-to-r from-purple-500 to-pink-500"
-                }`}
-              >
-                <Linkedin className="w-5 h-5 text-white" />
-              </a>
-              <a
-                href="#"
-                className={`w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform ${
-                  isDark
-                    ? "bg-gradient-to-r from-cyan-500 to-purple-500"
-                    : "bg-gradient-to-r from-purple-500 to-pink-500"
-                }`}
-              >
-                <Mail className="w-5 h-5 text-white" />
-              </a>
+              {[Github, Twitter, Linkedin, Mail].map((Icon, index) => (
+                <a
+                  key={index}
+                  href="#"
+                  className={`w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform ${
+                    isDark
+                      ? "bg-gradient-to-r from-cyan-500 to-purple-500"
+                      : "bg-gradient-to-r from-purple-500 to-pink-500"
+                  }`}
+                >
+                  <Icon className="w-5 h-5 text-white" />
+                </a>
+              ))}
             </div>
           </div>
 
+          {/* Team Info */}
           <div>
             <h4
               className={`text-lg font-semibold mb-4 transition-colors duration-300 ${
                 isDark ? "text-white" : "text-gray-800"
               }`}
             >
-              Product
+              Our Team
             </h4>
-            <ul className="space-y-2">
+            <ul className="space-y-4">
               <li>
-                <a
-                  href="#features"
-                  className={`transition-colors duration-300 ${
-                    isDark
-                      ? "text-gray-400 hover:text-cyan-400"
-                      : "text-gray-600 hover:text-purple-600"
-                  }`}
-                >
-                  Features
-                </a>
+                <p className={`${isDark ? "text-white" : "text-gray-800"} font-medium`}>
+                  Mohamed Mdhafar – <span className="font-normal italic">Lead Developer</span>
+                </p>
+                <p className={`${isDark ? "text-gray-400" : "text-gray-600"} text-sm`}>
+                  Full-stack engineer specializing in AI integration, real-time IoT data processing, and frontend architecture.
+                </p>
               </li>
               <li>
-                <a
-                  href="#"
-                  className={`transition-colors duration-300 ${
-                    isDark
-                      ? "text-gray-400 hover:text-cyan-400"
-                      : "text-gray-600 hover:text-purple-600"
-                  }`}
-                >
-                  Pricing
-                </a>
+                <p className={`${isDark ? "text-white" : "text-gray-800"} font-medium`}>
+                  Jawhar Sadok – <span className="font-normal italic">Lead Developer</span>
+                </p>
+                <p className={`${isDark ? "text-gray-400" : "text-gray-600"} text-sm`}>
+                  Full-stack engineer with expertise in scalable backend systems and real-time data pipelines.
+                </p>
               </li>
               <li>
-                <a
-                  href="#"
-                  className={`transition-colors duration-300 ${
-                    isDark
-                      ? "text-gray-400 hover:text-cyan-400"
-                      : "text-gray-600 hover:text-purple-600"
-                  }`}
-                >
-                  API
-                </a>
+                <p className={`${isDark ? "text-white" : "text-gray-800"} font-medium`}>
+                  Zayd Ben Fadhel – <span className="font-normal italic">ML Engineer</span>
+                </p>
+                <p className={`${isDark ? "text-gray-400" : "text-gray-600"} text-sm`}>
+                  Focuses on training and deploying deep learning models for video generation and content tagging.
+                </p>
               </li>
               <li>
-                <a
-                  href="#"
-                  className={`transition-colors duration-300 ${
-                    isDark
-                      ? "text-gray-400 hover:text-cyan-400"
-                      : "text-gray-600 hover:text-purple-600"
-                  }`}
-                >
-                  Documentation
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h4
-              className={`text-lg font-semibold mb-4 transition-colors duration-300 ${
-                isDark ? "text-white" : "text-gray-800"
-              }`}
-            >
-              Company
-            </h4>
-            <ul className="space-y-2">
-              <li>
-                <a
-                  href="#about    "
-                  className={`transition-colors duration-300 ${
-                    isDark
-                      ? "text-gray-400 hover:text-cyan-400"
-                      : "text-gray-600 hover:text-purple-600"
-                  }`}
-                >
-                  About
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className={`transition-colors duration-300 ${
-                    isDark
-                      ? "text-gray-400 hover:text-cyan-400"
-                      : "text-gray-600 hover:text-purple-600"
-                  }`}
-                >
-                  Team
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className={`transition-colors duration-300 ${
-                    isDark
-                      ? "text-gray-400 hover:text-cyan-400"
-                      : "text-gray-600 hover:text-purple-600"
-                  }`}
-                >
-                  Careers
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className={`transition-colors duration-300 ${
-                    isDark
-                      ? "text-gray-400 hover:text-cyan-400"
-                      : "text-gray-600 hover:text-purple-600"
-                  }`}
-                >
-                  Contact
-                </a>
+                <p className={`${isDark ? "text-white" : "text-gray-800"} font-medium`}>
+                  Youssef Chatti – <span className="font-normal italic">UI/UX Designer</span>
+                </p>
+                <p className={`${isDark ? "text-gray-400" : "text-gray-600"} text-sm`}>
+                  Designs intuitive, responsive interfaces and ensures a seamless user experience across all devices.
+                </p>
               </li>
             </ul>
           </div>
         </div>
 
+        {/* Bottom Notice */}
         <div
           className={`border-t mt-8 pt-8 text-center transition-colors duration-300 ${
             isDark ? "border-gray-800" : "border-gray-300"
@@ -228,8 +128,7 @@ const Footer: React.FC = () => {
               isDark ? "text-gray-400" : "text-gray-600"
             }`}
           >
-            © 2025 Trendwave by TakTik Team. Powered by DIONE. All rights
-            reserved.
+            © 2025 Trendwave by TakTik Team. Powered by DIONE. All rights reserved.
           </p>
         </div>
       </div>
