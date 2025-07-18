@@ -59,7 +59,7 @@ def twitter_callback(request):
     if token_resp.status_code != 200:
         return Response({"error": "Token exchange failed", "details": token_resp.text}, status=status.HTTP_400_BAD_REQUEST)
 
-    GROQ_API_KEY = "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"
+    GROQ_API_KEY = settings.GROQ_API_KEY
     while True :
         post = groq_chat(GROQ_API_KEY, "in english give me post discription about this trends (without introduction) (don't mention the word trend)(the post must be less than 280 characters):" + "italy")
         if "<think>" in post:
