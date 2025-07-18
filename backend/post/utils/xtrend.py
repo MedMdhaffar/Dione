@@ -1,66 +1,45 @@
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+import requests
+import time
 
-def get_trends():
-    # Set up Chrome options
-    options = Options()
-    options.add_argument("--headless")  # Enable headless mode
-    options.add_argument("--disable-gpu")
-    options.add_argument("--window-size=1920,1080")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
-    options.add_argument(
-        "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+def get_x_trends(apify_api_token, location):
+
+    ACTOR_ID = "karamelo~twitter-trends-scraper"
+    INPUT = {
+        "location": location  # try "Worldwide", "Tunisia", "France", etc.
+    }
+    start_resp = requests.post(
+        f"https://api.apify.com/v2/acts/{ACTOR_ID}/runs?token={apify_api_token}",
+        json={"input": INPUT}
     )
 
-    service = Service("/usr/local/bin/chromedriver")
+    if "data" not in start_resp.json():
+        print("Error starting actor:")
+        print(start_resp.status_code)
+        print(start_resp.text)
+        exit(1)
 
-    driver = webdriver.Chrome(service=service, options=options)
+    run_id = start_resp.json()["data"]["id"]
+    status = "RUNNING"
+    while status == "RUNNING":
+        time.sleep(5)
+        status = requests.get(
+            f"https://api.apify.com/v2/actor-runs/{run_id}?token={apify_api_token}"
+        ).json()["data"]["status"]
 
-    try:
-        driver.get("https://trends24.in/united-states/los-angeles/")
+    results = requests.get(
+        f"https://api.apify.com/v2/actor-runs/{run_id}/dataset/items?token={apify_api_token}"
+    ).json()
 
-        trend_container = WebDriverWait(driver, 20).until(
-            EC.presence_of_element_located(
-                (By.CSS_SELECTOR, ".px-2.scroll-smooth.flex.gap-x-4.w-fit.pt-8")
-            )
-        )
+    def parse_volume(v):
+        if not v:
+            return 0
+        return int(v.replace("Tweets", "").replace(",", "").strip())
 
-        trends_dict = {}
+    trends_sorted = sorted(results, key=lambda t: parse_volume(t.get('volume')), reverse=True)
 
-        list_containers = trend_container.find_elements(By.CSS_SELECTOR, ".list-container")
-        for list_container in list_containers:
-            trend_lists = list_container.find_elements(By.CSS_SELECTOR, ".trend-card__list")
-            for trend_list in trend_lists:
-                try:
-                    trend_name = trend_list.find_element(
-                        By.CSS_SELECTOR, ".trend-name .trend-link"
-                    ).text
-                    tweet_count = trend_list.find_element(
-                        By.CSS_SELECTOR, ".tweet-count"
-                    ).text
+    # for i, trend in enumerate(trends_sorted[:10], 1):
+    #     print(f"{i}. {trend['trend']} — {trend.get('volume', 'N/A')}")
+    return trends_sorted[0]['trend']  
 
-                    if "K" in tweet_count:
-                        tweet_count = int(float(tweet_count.replace("K", "")) * 1000)
-                    else:
-                        tweet_count = int(tweet_count)
 
-                    trends_dict[trend_name] = tweet_count
 
-                except Exception:
-                    continue
-
-        sorted_trends = sorted(trends_dict.items(), key=lambda x: x[1], reverse=True)
-        top_trends_list = [trend for trend, count in sorted_trends[:5]]
-        return top_trends_list[0]
-
-    except Exception as e:
-        print("Error:", e)
-        return []
-
-    finally:
-        driver.quit()

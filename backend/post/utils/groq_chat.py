@@ -25,4 +25,3 @@ def groq_chat(api_key, user_message, model="llama3-8b-8192"):
     # Return the response content
     return chat_completion.choices[0].message.content
 
-print(groq_chat("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", "hello"))
