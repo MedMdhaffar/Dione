@@ -8,7 +8,7 @@ const Hero: React.FC = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = React.useState(false);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center px-6">
+    <section id='home' className="relative min-h-screen flex items-center justify-center px-6">
       <div className="container mx-auto text-center">
         <div className="mb-8">
           <div

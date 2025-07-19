@@ -8,6 +8,7 @@ import Features from "./components/Features";
 import Services from "./components/Services";
 import Footer from "./components/Footer";
 import TrendsDashboard from "./pages/TrendsDashboard";
+import CoinContextProvider from "./contexts/CoinContext";
 
 const AppContent: React.FC = () => {
   const { isDark } = useTheme();
@@ -42,8 +43,10 @@ const AppContent: React.FC = () => {
 
 function App() {
   return (
-    <ThemeProvider>
-      <AppContent />
+    <ThemeProvider> {/* ✅ must come first */}
+      <CoinContextProvider>
+        <AppContent />
+      </CoinContextProvider>
     </ThemeProvider>
   );
 }
