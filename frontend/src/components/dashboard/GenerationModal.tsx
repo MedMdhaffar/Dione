@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { X, Play, FileText, Twitter, Loader2 } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
-import { CryptoCurrency, NFTCollection,  } from '../../types/dashboard';
+import { CoinProps, NftProps } from '../../types/dashboard';
 
 interface GenerationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  item: CryptoCurrency | NFTCollection | null;
+  item: CoinProps | NftProps | null;
   type: 'crypto' | 'nft';
-}
+}   
 
 const GenerationModal: React.FC<GenerationModalProps> = ({ isOpen, onClose, item, type }) => {
   const { isDark } = useTheme();
@@ -18,10 +18,18 @@ const GenerationModal: React.FC<GenerationModalProps> = ({ isOpen, onClose, item
 
   if (!isOpen || !item) return null;
 
+  // Safe get image function
+  const getItemImage = () => {
+    if (!item) return '';
+    if (typeof item.image === 'string') return item.image;
+    if (item.image && typeof item.image === 'object' && 'small' in item.image) {
+      return item.image.small;
+    }
+    return '';
+  };
+
   const platforms = [
-   
     { id: 'twitter', name: 'Twitter/X', icon: Twitter, color: 'from-cyan-500 to-blue-500' },
-   
   ];
 
   const togglePlatform = (platformId: string) => {
@@ -47,13 +55,9 @@ const GenerationModal: React.FC<GenerationModalProps> = ({ isOpen, onClose, item
 
   const getItemName = () => {
     if (type === 'crypto') {
-      return (item as CryptoCurrency).name;
+      return (item as CoinProps).name;
     }
-    return (item as NFTCollection).name;
-  };
-
-  const getItemImage = () => {
-    return item.image;
+    return (item as NftProps).name;
   };
 
   return (

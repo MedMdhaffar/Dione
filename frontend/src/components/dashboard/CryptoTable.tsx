@@ -1,11 +1,11 @@
-import React, { useContext, useEffect, useState } from 'react';
+import  { useContext, useEffect, useState } from 'react';
 import { TrendingUp, TrendingDown, Zap } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { CoinContext } from '../../contexts/CoinContext';
 import { CoinProps } from '../../types/dashboard';
 import GenerationModal from './GenerationModal';
 
-const CryptoTable: React.FC = () => {
+const CryptoTable = () => {
   const { isDark } = useTheme();
   const { currency,allCoin } = useContext(CoinContext);
 
