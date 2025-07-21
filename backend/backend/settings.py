@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'accounts',
     'vid_gen',
+    'post',
 ]
 
 REST_FRAMEWORK = {
@@ -157,3 +158,11 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL =  os.getenv("EMAIL_HOST_USER")
+
+TWITTER_CLIENT_ID = os.getenv("TWITTER_CLIENT_ID")
+TWITTER_CLIENT_SECRET = os.getenv("TWITTER_CLIENT_SECRET")
+TWITTER_REDIRECT_URI = os.getenv("TWITTER_REDIRECT_URI")
+
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+
+APIFY_API_KEY = os.getenv("APIFY_API_KEY")
