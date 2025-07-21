@@ -8,6 +8,7 @@ import { useTheme } from "../contexts/ThemeContext";
 import Signin from "./Signin";
 import Signup from "./Signup";
 
+const BACK_SERVER_IP = import.meta.env.VITE_BACK_SERVER_IP;
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -47,7 +48,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     setGeneralError("");
     
     try {
-      const response = await fetch("http://localhost:8000/accounts/verify/", {
+      const response = await fetch(`${BACK_SERVER_IP}/accounts/verify/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

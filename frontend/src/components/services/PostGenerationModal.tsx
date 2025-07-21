@@ -4,6 +4,8 @@ import { X, Twitter, Loader2 } from 'lucide-react';
 
 import { useTheme } from '../../contexts/ThemeContext';
 
+const BACK_SERVER_IP = import.meta.env.VITE_BACK_SERVER_IP;
+
 interface PostGenerationModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -22,7 +24,7 @@ const PostGenerationModal: React.FC<PostGenerationModalProps> = ({ isOpen, onClo
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:8000/post/twitter/start');
+      const response = await fetch(`${BACK_SERVER_IP}/post/twitter/start`);
       const data = await response.json();
 
 

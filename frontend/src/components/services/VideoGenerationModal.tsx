@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, Play, Twitter, Loader2, Video } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 
+const BACK_SERVER_IP = import.meta.env.VITE_BACK_SERVER_IP;
 interface VideoGenerationModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -38,7 +39,7 @@ const VideoGenerationModal: React.FC<VideoGenerationModalProps> = ({ isOpen, onC
     
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/vid_gen/generate-video/${encodeURIComponent(theme.trim())}/`
+        `${BACK_SERVER_IP}/vid_gen/generate-video/${encodeURIComponent(theme.trim())}/`
       );
       const data = await response.json();
 

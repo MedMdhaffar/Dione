@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+const BACK_SERVER_IP = import.meta.env.VITE_BACK_SERVER_IP;
 const TwitterCallback = () => {
   const navigate = useNavigate();
 
@@ -10,7 +10,7 @@ const TwitterCallback = () => {
     const state = params.get("state");
 
     if (code && state) {
-      fetch(`http://localhost:8000/post/twitter/callback?code=${code}&state=${state}`)
+      fetch(`${BACK_SERVER_IP}/post/twitter/callback?code=${code}&state=${state}`)
         .then(res => res.json())
         .then(data => {
             console.log("Success:", data);
