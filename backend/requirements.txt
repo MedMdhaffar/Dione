@@ -5,6 +5,10 @@ djangorestframework-simplejwt
 python-dotenv
 py3-validate-email
 
+# ========== X Post ========== #
+openai>=1.30.0
+stability-sdk==0.4.0
+tweepy
 
 # ========== Youtube ========== #
 
@@ -12,4 +16,3 @@ yt-dlp
 numpy
 google-api-python-client
 youtube-transcript-api
-openai
