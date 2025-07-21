@@ -9,6 +9,7 @@ import Services from "./components/Services";
 import Footer from "./components/Footer";
 import TrendsDashboard from "./pages/TrendsDashboard";
 import CoinContextProvider from "./contexts/CoinContext";
+import NftContextProvider from "./contexts/NftContext";
 
 const AppContent: React.FC = () => {
   const { isDark } = useTheme();
@@ -41,14 +42,19 @@ const AppContent: React.FC = () => {
   );
 };
 
+
 function App() {
   return (
-    <ThemeProvider> {/* ✅ must come first */}
+    <ThemeProvider>
       <CoinContextProvider>
-        <AppContent />
+        <NftContextProvider> 
+          <AppContent />
+        </NftContextProvider>
       </CoinContextProvider>
     </ThemeProvider>
   );
 }
+
+  
 
 export default App;

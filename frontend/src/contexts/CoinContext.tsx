@@ -31,12 +31,14 @@ const CoinContextProvider = ({ children }: CoinContextProviderProps) => {
   });
 
   const fetchAllCoin = async () => {
+    const apiKey = import.meta.env.VITE_COIN_GECKO_API_KEY;
+
     const options = {
       method: "GET",
       headers: {
         accept: "application/json",
-        "x-cg-demo-api-key": "CG-tjToq5RouAxTiThL24EsFCgA",
-      },
+        "x-cg-demo-api-key": apiKey,
+      },  
     };
 
     try {
@@ -47,7 +49,7 @@ const CoinContextProvider = ({ children }: CoinContextProviderProps) => {
       const data = await res.json();
       setAllCoins(data);
     } catch (err) {
-      console.error(err);
+      console.error("Error fetching coin data:", err);
     }
   };
 
