@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Mail, Lock, Eye, EyeOff, Loader2, AlertCircle } from "lucide-react";
 import { useTheme } from "../contexts/ThemeContext";
-
+const BACK_SERVER_IP = import.meta.env.VITE_BACK_SERVER_IP;
 interface SigninProps {
   onSuccess: (data: any) => void;
   onError: (error: string) => void;
@@ -70,7 +70,7 @@ const Signin: React.FC<SigninProps> = ({ onSuccess, onError, isLoading, setIsLoa
     setErrors({});
 
     try {
-      const response = await fetch("http://localhost:8000/accounts/signin/", {
+      const response = await fetch(`${BACK_SERVER_IP}/accounts/signin/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
