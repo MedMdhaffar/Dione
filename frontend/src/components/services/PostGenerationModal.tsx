@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+
 import { X, Twitter, Loader2 } from 'lucide-react';
+
 import { useTheme } from '../../contexts/ThemeContext';
 
 interface PostGenerationModalProps {
@@ -14,6 +16,7 @@ const PostGenerationModal: React.FC<PostGenerationModalProps> = ({ isOpen, onClo
 
   if (!isOpen) return null;
 
+
   const handleTwitterAuth = async () => {
     setError(null);
     setIsLoading(true);
@@ -21,6 +24,7 @@ const PostGenerationModal: React.FC<PostGenerationModalProps> = ({ isOpen, onClo
     try {
       const response = await fetch('http://localhost:8000/post/twitter/start');
       const data = await response.json();
+
 
       if (response.ok && data.auth_url) {
         // Redirect user to Twitter OAuth page
@@ -39,12 +43,12 @@ const PostGenerationModal: React.FC<PostGenerationModalProps> = ({ isOpen, onClo
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-6 z-50">
-      <div
-        className={`backdrop-blur-sm border rounded-2xl p-8 w-full max-w-lg transition-all duration-300 relative ${
-          isDark ? 'bg-black/40 border-cyan-500/20' : 'bg-white/40 border-purple-500/20'
-        }`}
-      >
-        {/* Close Button */}
+
+      <div className={`backdrop-blur-sm border rounded-2xl p-8 w-full max-w-2xl transition-all duration-300 relative ${
+        isDark 
+          ? 'bg-black/40 border-cyan-500/20' 
+          : 'bg-white/40 border-purple-500/20'
+      }`}>
         <button
           onClick={onClose}
           className={`absolute top-4 right-4 p-2 rounded-full transition-colors duration-300 ${
@@ -55,7 +59,6 @@ const PostGenerationModal: React.FC<PostGenerationModalProps> = ({ isOpen, onClo
           <X className="w-5 h-5" />
         </button>
 
-        {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center space-x-4 mb-4">
             <div
@@ -81,6 +84,7 @@ const PostGenerationModal: React.FC<PostGenerationModalProps> = ({ isOpen, onClo
           <p className={`mb-4 text-center text-sm font-semibold text-red-500`}>
             {error}
           </p>
+
         )}
 
         {/* Auth Button */}

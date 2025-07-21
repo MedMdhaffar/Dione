@@ -1,22 +1,12 @@
-export interface CryptoCurrency {
-  id: string;
+export interface CoinProps {
+  market_cap_rank: number;
+  image: string;
   name: string;
   symbol: string;
-  image: string;
   current_price: number;
-  market_cap: number;
-  market_cap_rank: number;
-  price_change_percentage_1h: number;
-  price_change_percentage_6h: number;
-  price_change_percentage_18h: number;
   price_change_percentage_24h: number;
-  total_volume: number;
-  circulating_supply: number;
-  max_supply: number;
-  sparkline_in_7d: {
-    price: number[];
-  };
-}
+  market_cap: number;
+};
 
 export interface NFTCollection {
   id: string;
@@ -36,5 +26,5 @@ export interface NFTCollection {
 
 export interface GenerationOptions {
   type: 'video' | 'post';
-  platforms: ('tiktok' | 'instagram' | 'facebook' | 'twitter' | 'youtube')[];
+  platforms: ('twitter')[];
 }

@@ -79,16 +79,6 @@ const Header: React.FC = () => {
               About
             </a>
             <ThemeToggle />
-            <button
-              onClick={() => setIsAuthModalOpen(true)}
-              className={`px-6 py-2 rounded-full text-white font-semibold hover:shadow-lg transition-all duration-300 transform hover:scale-105 ${
-                isDark
-                  ? "bg-gradient-to-r from-cyan-500 to-purple-500 hover:shadow-cyan-500/25"
-                  : "bg-gradient-to-r from-purple-500 to-pink-500 hover:shadow-purple-500/25"
-              }`}
-            >
-              Get Started
-            </button>
           </nav>
 
           <div className="md:hidden flex items-center space-x-4">
@@ -142,16 +132,6 @@ const Header: React.FC = () => {
               >
                 About
               </a>
-              <button
-                className={`px-6 py-2 rounded-full text-white font-semibold w-fit ${
-                  isDark
-                    ? "bg-gradient-to-r from-cyan-500 to-purple-500"
-                    : "bg-gradient-to-r from-purple-500 to-pink-500"
-                }`}
-                onClick={() => setIsAuthModalOpen(true)}
-              >
-                Get Started
-              </button>
             </nav>
           </div>
         )}

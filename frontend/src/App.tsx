@@ -10,6 +10,7 @@ import Footer from "./components/Footer";
 import TrendsDashboard from "./pages/TrendsDashboard";
 import TwitterCallback from "./pages/TwitterCallBack";
 import SuccessPage from "./pages/TwitterSuccess";
+import CoinContextProvider from "./contexts/CoinContext";
 
 const HomeLayout: React.FC = () => {
   const { isDark } = useTheme();
@@ -35,14 +36,16 @@ const HomeLayout: React.FC = () => {
 function App() {
   return (
     <ThemeProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<HomeLayout />} />
-          <Route path="/trends" element={<TrendsDashboard />} />
-          <Route path="/twitter/callback" element={<TwitterCallback />} />
-          <Route path="/success" element={<SuccessPage />} />
-        </Routes>
-      </Router>
+      <CoinContextProvider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<HomeLayout />} />
+            <Route path="/trends" element={<TrendsDashboard />} />
+            <Route path="/twitter/callback" element={<TwitterCallback />} />
+            <Route path="/success" element={<SuccessPage />} />
+          </Routes>
+        </Router>
+      </CoinContextProvider> 
     </ThemeProvider>
   );
 }

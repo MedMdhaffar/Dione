@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Play, Youtube, Instagram, Facebook, Twitter, Loader2, Video } from 'lucide-react';
+import { X, Play, Twitter, Loader2, Video } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 
 interface VideoGenerationModalProps {
@@ -17,11 +17,9 @@ const VideoGenerationModal: React.FC<VideoGenerationModalProps> = ({ isOpen, onC
   if (!isOpen) return null;
 
   const platforms = [
-    { id: 'tiktok', name: 'TikTok', icon: Play, color: 'from-pink-500 to-red-500' },
-    { id: 'instagram', name: 'Instagram Reels', icon: Instagram, color: 'from-purple-500 to-pink-500' },
-    { id: 'facebook', name: 'Facebook', icon: Facebook, color: 'from-blue-500 to-blue-600' },
+ 
     { id: 'twitter', name: 'Twitter/X', icon: Twitter, color: 'from-cyan-500 to-blue-500' },
-    { id: 'youtube', name: 'YouTube Shorts', icon: Youtube, color: 'from-red-500 to-red-600' },
+
   ];
 
   const togglePlatform = (platformId: string) => {

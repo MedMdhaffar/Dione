@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { X, Play, FileText, Youtube, Instagram, Facebook, Twitter, Loader2 } from 'lucide-react';
+import { X, Play, FileText, Twitter, Loader2 } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
-import { CryptoCurrency, NFTCollection, GenerationOptions } from '../../types/dashboard';
+import { CryptoCurrency, NFTCollection,  } from '../../types/dashboard';
 
 interface GenerationModalProps {
   isOpen: boolean;
@@ -19,11 +19,9 @@ const GenerationModal: React.FC<GenerationModalProps> = ({ isOpen, onClose, item
   if (!isOpen || !item) return null;
 
   const platforms = [
-    { id: 'tiktok', name: 'TikTok', icon: Play, color: 'from-pink-500 to-red-500' },
-    { id: 'instagram', name: 'Instagram', icon: Instagram, color: 'from-purple-500 to-pink-500' },
-    { id: 'facebook', name: 'Facebook', icon: Facebook, color: 'from-blue-500 to-blue-600' },
+   
     { id: 'twitter', name: 'Twitter/X', icon: Twitter, color: 'from-cyan-500 to-blue-500' },
-    { id: 'youtube', name: 'YouTube', icon: Youtube, color: 'from-red-500 to-red-600' },
+   
   ];
 
   const togglePlatform = (platformId: string) => {
