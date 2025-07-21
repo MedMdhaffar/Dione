@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowLeft, Bitcoin, Palette } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import AnimatedBackground from '../components/AnimatedBackground';
@@ -10,6 +10,38 @@ import DashboardStats from '../components/dashboard/DashboardStats';
 const TrendsDashboard = () => {
   const { isDark } = useTheme();
   const [activeTab, setActiveTab] = useState<'crypto' | 'nft'>('crypto');
+
+  const [stats, setStats] = useState({
+    totalMarketCap: 0,
+    marketCapChange: 0,
+    totalVolume: 0,
+    volumeChange: 0, // not provided by CoinGecko
+    btcDominance: 0,
+    activeCoins: 0,
+  });
+
+  useEffect(() => {
+    const fetchGlobalStats = async () => {
+      try {
+        const res = await fetch('https://api.coingecko.com/api/v3/global');
+        const json = await res.json();
+        const data = json.data;
+
+        setStats({
+          totalMarketCap: data.total_market_cap.usd,
+          marketCapChange: data.market_cap_change_percentage_24h_usd,
+          totalVolume: data.total_volume.usd,
+          volumeChange: 0, // You can replace this with another value if needed
+          btcDominance: data.market_cap_percentage.btc,
+          activeCoins: data.active_cryptocurrencies,
+        });
+      } catch (err) {
+        console.error('Error fetching global crypto stats:', err);
+      }
+    };
+
+    fetchGlobalStats();
+  }, []);
 
   const handleGoBack = () => {
     window.history.back();
@@ -64,12 +96,12 @@ const TrendsDashboard = () => {
 
         <main className="container mx-auto px-6 py-8">
           <DashboardStats
-            totalMarketCap={1650000000000}
-            marketCapChange={2.4}
-            totalVolume={85000000000}
-            volumeChange={-5.2}
-            btcDominance={51.3}
-            activeCoins={2847}
+            totalMarketCap={stats.totalMarketCap}
+            marketCapChange={stats.marketCapChange}
+            totalVolume={stats.totalVolume}
+            volumeChange={stats.volumeChange}
+            btcDominance={stats.btcDominance}
+            activeCoins={stats.activeCoins}
           />
 
           {/* Tabs */}
