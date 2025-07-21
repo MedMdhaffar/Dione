@@ -1,5 +1,5 @@
 import requests
-import base64  # <-- Add this import
+import base64 
 import os
 from dotenv import load_dotenv
 load_dotenv()
@@ -27,7 +27,7 @@ def generate_image(prompt: str):
         
         # Decode and save the image
         with open("output.png", "wb") as f:
-           f.write(base64.b64decode(image_data))  # <-- Use base64.b64decode
+           f.write(base64.b64decode(image_data)) 
            return image_data
         print("Image loaded successfully!")
     else:
