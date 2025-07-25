@@ -48,7 +48,9 @@ function App() {
               <Route path="/success" element={<SuccessPage />} />
             </Routes>
           </Router>
-        </CoinContextProvider>
+        </NftContextProvider>
+      </CoinContextProvider>
+         
     </ThemeProvider>
   );
 }
